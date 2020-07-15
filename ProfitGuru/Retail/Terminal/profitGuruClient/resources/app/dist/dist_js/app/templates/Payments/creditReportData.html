@@ -1,0 +1,125 @@
+<div class="row" style="background-color:#dbdbdd;color:white;width:100%;" ng-if="reportTitle !==''">
+    <h3 style="margin-left:30%;">{{personType + ' Credit Report : '}} {{reportTitle}}</h3>
+</div>
+<div ng-if="!bShowPaidCreditPaymentHistory">
+<div class="row">
+    <div class="table rep-table col">
+        <div class="row rep-tab-head">
+            <div class="col " style="width: 100%">
+                <p>Select {{personType}}
+                    <br>
+                    <select style="background-color:white;color:black" ng-model="creditsSelectionFilterModel" ng-options="key as value for (key,value) in creditsSelectionFilter"
+                        ng-change="setCreditsSelectionFiltervalue(creditsSelectionFilterModel)">
+                    </select>
+                </p>
+            </div>
+            <div class="col " style="width: 100%">{{personType}} Name</div>
+            <div class="col " style="width: 100%">{{personType ==='Customer' ? 'Sales' : 'Purchase'}}
+                <br>Total</div>
+            <div class="col " style="width: 100%">Total
+                <br>Pending Amt</div>
+            <div class="col " style="width: 100%">Near
+                <br>Due Amt</div>
+            <div class="col " style="width: 100%">Crossed
+                <br>Due Amt</div>
+            <!-- <div class="col " style="width: 100%">Process For
+                <br> {{personType ==='Customer' ? 'Receive' : 'Pay'}}</div> -->
+            <div class="col " style="width: 100%">{{personType ==='Customer' ? 'Sales' : 'Purchase'}}
+                <br>History</div>
+        </div>
+        <ion-list>
+            <ion-item class="row rep-tab-body reportListView" ng-repeat="info in filteredDetails | toArray:false | filter:creditSearchObj.creditSearch"
+                ng-if="info.customer">
+                <div calss="col col-15" style="width: 100%">
+                    <input type="checkbox" ng-model="customerCBox[$index]" ng-change="m_checkThisRow(filteredDetails[$index])" /> {{$index + 1}} </div>
+                <div calss="col col-15" style="width: 100%">{{info.customer.first_name +" "+info.customer.last_name | rptFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.total | decimalsLimitFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.pendingAmount | decimalsLimitFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.nearDueDateAmt | decimalsLimitFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.overDueDateAmt | decimalsLimitFilter}}</div>
+                <!-- <div calss="col col-15" style="width: 100%;">
+                    <button ng-click="YTI();" style="width: initial;">Receive</button>
+                </div> -->
+                <div calss="col col-15" style="width: 100%">
+                    <button ng-click="showCreditDetails(info);" style="width: initial;">Details</button>
+                </div>
+            </ion-item>
+        </ion-list>
+        <ion-list>
+            <ion-item class="row rep-tab-body reportListView" ng-repeat="info in filteredDetails | toArray:false | filter:creditSearchObj.creditSearch"
+                ng-if="info.supplier">
+                <div calss="col col-15" style="width: 100%">
+                    <input type="checkbox" ng-model="supplierCBox[$index]" ng-change="m_checkThisRow(filteredDetails[$index])" /> {{$index + 1}} </div>
+                <div calss="col col-15" style="width: 100%">{{info.supplier.first_name +" "+info.supplier.last_name | rptFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.total | decimalsLimitFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.pendingAmount | decimalsLimitFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.nearDueDateAmt | decimalsLimitFilter}}</div>
+                <div calss="col col-15" style="width: 100%">{{info.overDueDateAmt | decimalsLimitFilter}}</div>
+                <!-- <div calss="col col-15" style="width: 100%;">
+                    <button ng-click="YTI();" style="width: initial;">Pay</button>
+                </div> -->
+                <div calss="col col-15" style="width: 100%">
+                    <button ng-click="showCreditDetails(info);" style="width: initial;">Details</button>
+                </div>
+            </ion-item>
+        </ion-list>
+    </div>
+</div>
+</div>
+<div ng-if="bShowPaidCreditPaymentHistory">
+    <div class="row">
+        <div class="table rep-table col">
+            <div class="row rep-tab-head">
+                <div class="col " style="width: 100%">{{personType}} Name</div>
+                <div class="col " style="width: 100%">Payment
+                    <br>Date</div>
+                <div class="col " style="width: 100%">Recent
+                    <br> Paid Amt</div>
+                <div class="col " style="width: 100%">Total
+                    <br>Credit Sales</div>
+                <div class="col " style="width: 100%">Total
+                    <br>Paid Credit</div>
+                    <div class="col " style="width: 100%">Pending
+                        <br>Balance</div>
+                <div class="col " style="width: 100%">View 
+                    <br>Details</div>
+            </div>
+            <ion-list>
+                <ion-item class="row rep-tab-body reportListView" ng-repeat="info in allPaidCreditDetails | toArray:false | filter:creditSearchObj.creditSearch"
+                    ng-if="info.customer">
+                    <div calss="col col-15" style="width: 100%">{{info.customer.first_name +" "+info.customer.last_name | rptFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.paidCtreditTransactions[0].sale_time}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.paidCtreditTransactions[0].payment_amount | decimalsLimitFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{allCreditDetails[info.paidCtreditTransactions[0].customer_id].total | decimalsLimitFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.totPaidCredit | decimalsLimitFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{allCreditDetails[info.paidCtreditTransactions[0].customer_id].pendingAmount | decimalsLimitFilter}}</div>
+                    
+                    <!-- <div calss="col col-15" style="width: 100%;">
+                        <button ng-click="YTI();" style="width: initial;">Receive</button>
+                    </div> -->
+                    <div calss="col col-15" style="width: 100%">
+                        <button ng-click="viewCreditPaymentDetailsByCustomer(info.paidCtreditTransactions[0].customer_id, info.customer);" style="width: initial;">Details</button>
+                    </div>
+                </ion-item>
+            </ion-list>
+            <ion-list>
+                <ion-item class="row rep-tab-body reportListView" ng-repeat="info in filteredDetails | toArray:false | filter:creditSearchObj.creditSearch"
+                    ng-if="info.supplier">
+                    <div calss="col col-15" style="width: 100%">
+                        <input type="checkbox" ng-model="supplierCBox[$index]" ng-change="m_checkThisRow(filteredDetails[$index])" /> {{$index + 1}} </div>
+                    <div calss="col col-15" style="width: 100%">{{info.supplier.first_name +" "+info.supplier.last_name | rptFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.total | decimalsLimitFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.pendingAmount | decimalsLimitFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.nearDueDateAmt | decimalsLimitFilter}}</div>
+                    <div calss="col col-15" style="width: 100%">{{info.overDueDateAmt | decimalsLimitFilter}}</div>
+                    <!-- <div calss="col col-15" style="width: 100%;">
+                        <button ng-click="YTI();" style="width: initial;">Pay</button>
+                    </div> -->
+                    <div calss="col col-15" style="width: 100%">
+                        <button ng-click="showCreditDetails(info);" style="width: initial;">Details</button>
+                    </div>
+                </ion-item>
+            </ion-list>
+        </div>
+    </div>
+</div>

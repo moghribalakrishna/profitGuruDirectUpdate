@@ -1,0 +1,48 @@
+<div class="row ">
+    <div class="col bar bar-header item-input-inset">
+        <label class="item-input-wrapper">
+            <i class="icon ion-ios-search placeholder-icon"></i>
+            <input type="search" ng-model="creditSearchObj.creditSearch" ng-change="updateSearchVar(creditSearchObj.creditSearch)" placeholder="Search Here"
+                class="pg-all-search-align">
+    </div>  
+    <div class="col">
+        <div class=" bar bar-header item-input-inset">
+            <button class="button button-clear ion-android-cancel" ng-click="clearCreditSearch()"> </button>
+        </div>
+    </div>
+    </label>
+
+    <div  class="col" style="float: right;margin-right: 7%">
+        <button class="button border-radius button-block icon-right ion-chevron-right button-calm" ng-click="showCreditPaymentHistory();"
+          >{{showCreditPaymentHistoryButtonMsg}}</button>
+      </div>
+</div>
+<div class="row" style="text-align:center;background:#eee">
+    <div class="col">
+        <div style="display:inline-block;">
+            <div class="row">
+                <div class="col">
+                    <label class="item-input-wrapper">
+                        <span style="margin-left:20px">From</span>
+                        <input type="date" max="9999-12-31" ng-model="creditRpt.start_date" style="border: 1px solid lightgrey;display: inline-block;max-height: 26px;vertical-align: initial;"
+                        />
+                    </label>
+                </div>
+                <div class="col">
+                    <label class="item-input-wrapper">
+                        <span style="margin-left:20px">To</span>
+                        <input type="date" max="9999-12-31" ng-model="creditRpt.end_date" style="border: 1px solid lightgrey;display: inline-block;max-height: 26px;vertical-align: initial;"
+                        />
+                    </label>
+                </div>
+            </div>
+        </div>
+        <button style="background:#387ef5; color:white; border:none; border-radius:6px; font-size:medium; width: initial;" ng-click="getCreditReportByDate(creditRpt,personType);">Get Result</button>
+        <div ng-if="!bShowPaidCreditPaymentHistory">
+            <button style="background:#387ef5; color:white; border:none; border-radius:6px; font-size:medium; width: initial;" ng-click="sendCreditNotification(paymentNotificationValue)">Send Payment Notification</button>
+            <!--ng-click="sendCreditNotification(paymentNotificationValue);">Send Payment Notification</button>-->
+            <select ng-model="paymentNotificationValue" ng-options="key as value for (key,value) in paymentNotificationType" ng-change="">
+            </select>
+        </div>
+    </div>
+</div>

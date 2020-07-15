@@ -1,0 +1,280 @@
+<ion-view>
+    <ion-nav-title>
+      <div class="row">
+        <div class="col-90">
+          <h4 style="color:white;margin-left:10%;">{{currentView.title}} payment view</h4>
+        </div>
+        <div class="col-10">
+          <span class="fl">{{companyName}}</span>
+        </div>
+      </div>
+    </ion-nav-title>
+    <ion-content class="scrollBar" style="background-color: #E5E7E9;">
+      <!--<div class="row">-->
+      <div style="margin-left: 7%;">
+        <b > {{currentView.title}}: </b>
+        <span>{{paymentResp.name}}</span>
+      </div>
+      <div style="margin-left: 7%;">
+        <b > Total payment due: </b>
+        <span>{{paymentResp.pendingAmount | decimalsLimitFilter}}</span>
+      </div>
+      <!--</div>-->
+      <div class="row" style="margin-left: 7%;">
+        <div ng-if="!bShowPaidCreditPaymentHistory" style="text-align: center">
+          <b >{{currentView.transaction}} Transaction on Credit </b>
+        </div>
+        <div ng-if="bShowPaidCreditPaymentHistory" style="text-align: center">
+          <b >{{currentView.transaction}} Paid Credit Transactions</b>
+        </div>
+      </div>
+      <div >
+        <div ng-if="!bShowPaidCreditPaymentHistory" style="width: 25%;margin-left: 7%;">
+          <b>Transaction Selection method: </b>
+          <select ng-model="paymentSelectionType" ng-options="key as value for (key,value) in paymentSelectionList" ng-change="onpaymentSelectionTypeChange(paymentSelectionType);">
+  
+          </select>
+        </div>
+        <div   style="float: right;margin-right: 7%">
+          <button class="button border-radius button-block icon-right ion-chevron-right button-calm" ng-click="showCreditPaymentHistory();"
+            >{{showCreditPaymentHistoryButtonMsg}}</button>
+        </div>
+      </div>
+
+  <div ng-if="!bShowPaidCreditPaymentHistory">
+      <div class="card float-left paymentViewCard">
+        <ion-list>
+          <ion-item style="background-color:#2E3E50;color:#ffffff">
+            <div class="row">
+              <div class="col-10" style="font-weight: 700">
+                Payments
+              </div>
+              <div class="col-25" ng-repeat="header in currentView.header">
+                <b>{{header}}</b>
+              </div>
+              <div class="col-10">
+              </div>
+              <div class="col-10" ng-if="paymentSelectionType=='Select Transaction Manually'">
+              </div>
+            </div>
+          </ion-item>
+          <div ng-repeat="pending_amount in paymentResp.pendingTransactions track by $index" ng-if="pending_amount.sales_info">
+            <ion-item class="item-stable" ng-click="toggleGroup(pending_amount)" ng-class="{active: isGroupShown(pending_amount)}">
+              <div class="row">
+                <div class="col-10">
+                  <i class="icon" ng-class="isGroupShown(pending_amount) ? 'ion-navicon-round' : ' ion-grid'"></i>
+                </div>
+                <div class="col-25">
+                  {{pending_amount.sales_info.sale_time }}
+                </div>
+                <div class="col-25">
+                  {{pending_amount.sales_info.total | decimalsLimitFilter }}
+                </div>
+                <div class="col-25">
+                  {{pending_amount.sales_info.pending_amount | decimalsLimitFilter}}
+                </div>
+                <div class="col-10">
+                  <button class="pg-submit-for-all-button" style="width: initial;" ng-click="rePrintThisSaleReceipt('sale_'+pending_amount.sale_id)">View Invoice</button>
+                </div>
+                <div class="col-10" ng-if="paymentSelectionType=='Select Transaction Manually'">
+                  <input type="checkbox" ng-model="add2PaymentCbox[$index]" ng-change="Add2payingAmount(pending_amount.sales_info.pending_amount,add2PaymentCbox[$index],pending_amount,$index)"
+                    ng-checked="pending_amount.checked">
+                </div>
+              </div>
+            </ion-item>
+            <ion-item class="item-accordion" class="item-accordion borderemp" ng-show="isGroupShown(pending_amount)">
+              <div class="row" style="border-bottom:1px solid #efefef;width: 104%; background-color: coral;margin-left: -2%;">
+                <div class="col-10">
+                  <b>S.No</b>
+                </div>
+                <div class="col-25" ng-repeat="header in currentView.creditsHeaderDetails">
+                  <b>{{header}}</b>
+                </div>
+              </div>
+              <div class="row" ng-repeat="pd in paymentDetails track by $index" ng-if="pd.date">
+                <div class="col-10">
+                  {{$index}}
+                </div>
+                <div class="col-25">
+                  {{pd.payment_type}}
+                </div>
+                <div class="col-25">
+                  {{pd.payment_amount}}
+                </div>
+                <div class="col-25">
+                  {{pd.date | date:'medium'}}
+                </div>
+              </div>
+  
+            </ion-item>
+          </div>
+  
+  
+          <div ng-repeat="pending_amount in paymentResp.pendingTransactions track by $index" ng-if="pending_amount.receivings_info">
+            <ion-item class="item-stable" ng-click="toggleGroup(pending_amount)" ng-class="{active: isGroupShown(pending_amount)}">
+  
+              <div class="row">
+                <div class="col-10">
+                  <i class="icon" ng-class="isGroupShown(pending_amount) ? 'ion-navicon-round' : ' ion-grid'"></i>
+                </div>
+                <div class="col-25">
+                  {{pending_amount.receivings_info.receiving_time}}
+                </div>
+                <div class="col-25">
+                  {{pending_amount.receivings_info.total | decimalsLimitFilter }}
+                </div>
+                <div class="col-25">
+                  {{pending_amount.receivings_info.pending_amount | decimalsLimitFilter}}
+                </div>
+                <div class="col-10">
+                  <button class="pg-submit-for-all-button" style="width: initial;" ng-click="reprintPurchase('receiving_'+pending_amount.receiving_id)">View Invoice</button>
+                </div>
+                <div class="col-10" ng-if="paymentSelectionType=='Select Transaction Manually'">
+                  <input type="checkbox" ng-model="add2PaymentCbox[$index]" ng-change="Add2payingAmount(pending_amount.receivings_info.pending_amount,add2PaymentCbox[$index],pending_amount,$index)"
+                    ng-checked="pending_amount.checked">
+                </div>
+              </div>
+            </ion-item>
+            <ion-item class="item-accordion" class="item-accordion borderemp" ng-show="isGroupShown(pending_amount)">
+              <div class="row" style="border-bottom:1px solid #efefef;width: 104%; background-color: coral;margin-left: -2%;">
+                <div class="col-10">
+                  <b> S.No</b>
+                </div>
+                <div class="col-25" ng-repeat="header in currentView.creditsHeaderDetails">
+                  <b>{{header}}</b>
+                </div>
+              </div>
+              <div class="row" ng-repeat="pd in paymentDetails track by $index" ng-if="pd.date">
+                <div class="col-10">
+                  {{$index}}
+                </div>
+                <div class="col-25">
+                  {{pd.payment_type}}
+                </div>
+                <div class="col-25">
+                  {{pd.payment_amount}}
+                </div>
+                <div class="col-25">
+                  {{pd.date | date:'medium'}}
+                </div>
+              </div>
+            </ion-item>
+          </div>
+  
+  
+        </ion-list>
+      </div>
+  
+      <div class="row" style="margin-left: 37%;">
+        <div style="text-align: center">
+          <b>Paying Amount: </b>
+          <span>{{payingAmount | decimalsLimitFilter}}</span>
+        </div>
+      </div>
+      <div class="row" style="margin-left: 37%;">
+        <div style="text-align: center">
+          <button class="button border-radius icon-right ion-chevron-right button-block button-balanced" ng-click="makePayment();"
+            ng-disabled="!payingAmount">Proceed for payment</button>
+        </div>
+      </div>
+    </div>
+    <div ng-if="bShowPaidCreditPaymentHistory">
+      <div class="card float-left paymentViewCard">
+        <ion-list>
+          <ion-item style="background-color:#2E3E50;color:#ffffff">
+            <div class="row">
+              <div class="col-10" style="font-weight: 700">
+                Payments
+              </div>
+              <div class="col-25" ng-repeat="header in currentView.paidCreditHeaders">
+                <b>{{header}}</b>
+              </div>
+              <div class="col-10">
+              </div>
+              <div class="col-10" ng-if="paymentSelectionType=='Select Transaction Manually'">
+              </div>
+            </div>
+          </ion-item>
+          <div ng-repeat="paidCreditTxn in paidCreditResp.paidCtreditTransactions track by $index">
+            <ion-item class="item-stable" ng-click="toggleGroup(pending_amount)" ng-class="{active: isGroupShown(pending_amount)}">
+              <div class="row">
+                <div class="col-10">
+                  <i class="icon" ng-class="isGroupShown(pending_amount) ? 'ion-navicon-round' : ' ion-grid'"></i>
+                </div>
+                <div class="col-25">
+                  {{paidCreditTxn.sale_time }}
+                </div>
+                <div class="col-25">
+                  {{paidCreditTxn.payment_type }}
+                </div>
+                <div class="col-25">
+                  {{paidCreditTxn.payment_amount | decimalsLimitFilter }}
+                </div>
+                <div class="col-25">
+                  {{paidCreditTxn.comment }}
+                </div>
+                <div class="col-10">
+                  <button class="pg-submit-for-all-button" style="width: initial;" ng-click="rePrintThisSaleReceipt('sale_'+pending_amount.sale_id)">View Invoice</button>
+                </div>
+              </div>
+            </ion-item>
+          </div>
+  
+  
+          <div ng-repeat="pending_amount in paymentResp.pendingTransactions track by $index" ng-if="pending_amount.receivings_info">
+            <ion-item class="item-stable" ng-click="toggleGroup(pending_amount)" ng-class="{active: isGroupShown(pending_amount)}">
+  
+              <div class="row">
+                <div class="col-10">
+                  <i class="icon" ng-class="isGroupShown(pending_amount) ? 'ion-navicon-round' : ' ion-grid'"></i>
+                </div>
+                <div class="col-25">
+                  {{pending_amount.receivings_info.receiving_time}}
+                </div>
+                <div class="col-25">
+                  {{pending_amount.receivings_info.total | decimalsLimitFilter }}
+                </div>
+                <div class="col-25">
+                  {{pending_amount.receivings_info.pending_amount | decimalsLimitFilter}}
+                </div>
+                <div class="col-10">
+                  <button class="pg-submit-for-all-button" style="width: initial;" ng-click="reprintPurchase('receiving_'+pending_amount.receiving_id)">View Invoice</button>
+                </div>
+                <div class="col-10" ng-if="paymentSelectionType=='Select Transaction Manually'">
+                  <input type="checkbox" ng-model="add2PaymentCbox[$index]" ng-change="Add2payingAmount(pending_amount.receivings_info.pending_amount,add2PaymentCbox[$index],pending_amount,$index)"
+                    ng-checked="pending_amount.checked">
+                </div>
+              </div>
+            </ion-item>
+            <ion-item class="item-accordion" class="item-accordion borderemp" ng-show="isGroupShown(pending_amount)">
+              <div class="row" style="border-bottom:1px solid #efefef;width: 104%; background-color: coral;margin-left: -2%;">
+                <div class="col-10">
+                  <b> S.No</b>
+                </div>
+                <div class="col-25" ng-repeat="header in currentView.creditsHeaderDetails">
+                  <b>{{header}}</b>
+                </div>
+              </div>
+              <div class="row" ng-repeat="pd in paymentDetails track by $index" ng-if="pd.date">
+                <div class="col-10">
+                  {{$index}}
+                </div>
+                <div class="col-25">
+                  {{pd.payment_type}}
+                </div>
+                <div class="col-25">
+                  {{pd.payment_amount}}
+                </div>
+                <div class="col-25">
+                  {{pd.date | date:'medium'}}
+                </div>
+              </div>
+            </ion-item>
+          </div>
+  
+  
+        </ion-list>
+      </div>
+    </div>
+    </ion-content>
+  </ion-view>

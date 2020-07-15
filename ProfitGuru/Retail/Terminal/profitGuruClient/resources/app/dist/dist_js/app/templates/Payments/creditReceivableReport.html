@@ -1,0 +1,15 @@
+<ion-view>
+    <ion-nav-title>
+        <div class="row" style="width: 100%">
+            <div class="col-75">
+                <h1 class="title menuTitels ion-android-cart">{{'Credit Report'}}</h1>
+            </div>
+        </div>
+    </ion-nav-title>
+    <ion-subheader-bar class="bar bar-subheader">
+        <div ng-include src="'./dist/dist_js/app/templates/Payments/creditReportHeader.html'"></div>
+    </ion-subheader-bar>
+    <ion-content class="scrollBar" style="margin-top:7%;">
+        <div ng-include src="'./dist/dist_js/app/templates/Payments/creditReportData.html'"></div>
+    </ion-content>
+</ion-view>
