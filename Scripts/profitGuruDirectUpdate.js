@@ -40,6 +40,7 @@ if (shell.exec('curl -LkSs https://api.github.com/repos/moghribalakrishna/profit
 
                     let DstFolder = installationAppRoot+relativeDestFoldr;
                     console.log('Copying file ', sourceFile, ' to ', DstFolder);
+                    //shell.cp('-R', sourceFile,DstFolder);
                     next();
                 });
                 
