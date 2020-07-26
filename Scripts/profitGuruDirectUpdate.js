@@ -16,25 +16,18 @@ var walk = require('walk');
 var appList = ['Retail', 'Restaurant', 'Crm', 'Saloon', 'Tito_retail', 'Tito_retailTerminal'];
 let installationAppRoot = 'C:/ProfitGuru';
 
-var appType = argv.a.toLowerCase();
-if (appList.indexOf(capitalizeFirstLetter(appType)) >= 0) {
-	if (shell.exec('curl -LkSs https://api.github.com/repos/moghribalakrishna/profitGuruDirectUpdate/tarball -o master.tar.gz').code !== 0) {
-		shell.echo('Error: Git Files Download failed');
-		shell.exit(1);
-	} else {
-		shell.echo('Respective Scripts are downloaded & ready for installation');
-		if (shell.exec('tar -xvf master.tar.gz').code !== 0) {
-			shell.echo('Error: tar of Files Download failed');
-			shell.exit(1);
-		} else {
-			shell.cd('moghribalakrishna-profitGuruDirectUpdate*/ProfitGuru');
+var appType = argv.a;
+if (appList.indexOf(appType >= 0)) {
+	
+			shell.cd('../ProfitGuru');
 			let filesProfitGuruFolder = shell.pwd().stdout;
 			var walker = walk.walk(filesProfitGuruFolder, {
 				followLinks: false
 			});
+			
 			switch (appType) {
 				case 'retail':
-					console.log('Updating Retail Application from folder', filesProfitGuruFolder);
+					console.log('Updating'+appType + ' Application from folder', filesProfitGuruFolder);
 					// Create template folder for copying html files
 					walker.on('file', function (root, stat, next) {
 						// Add this file to the list of filesProfitGuruFolder
@@ -45,7 +38,7 @@ if (appList.indexOf(capitalizeFirstLetter(appType)) >= 0) {
 						} else {
 							relativeDestFoldr = root.split('ProfitGuru')[1];
 						}
-
+					console.log('Copying files from Src=',filesProfitGuruFolder, 'to Dst=',DstFolder);
 						let DstFolder = installationAppRoot + relativeDestFoldr;
 						let orginalSourceFile = DstFolder + '/' + stat.name;
 
@@ -98,7 +91,7 @@ if (appList.indexOf(capitalizeFirstLetter(appType)) >= 0) {
 
 						let DstFolder = installationAppRoot + relativeDestFoldr;
 						let orginalSourceFile = DstFolder + '/' + stat.name;
-
+	console.log('Copying files from Src=',filesProfitGuruFolder, 'to Dst=',DstFolder);
 						var dateString = new Date().toLocaleDateString();
 						let OrgRenameFileName = orginalSourceFile + '_' + dateString + '_' + Date.now();
 
@@ -136,9 +129,6 @@ if (appList.indexOf(capitalizeFirstLetter(appType)) >= 0) {
 			}
 
 
-
-		}
-	}
 } else {
 	console.log('Enter on of the app type of ' + appList);
 }
