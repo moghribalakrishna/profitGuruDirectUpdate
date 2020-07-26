@@ -1,0 +1,113 @@
+<!--Copyright (C) AliennHu Pvt Ltd - All Rights Reserved
+ 	Unauthorized copying of this file, via any medium is strictly prohibited
+ 	Proprietary and confidential
+ 	Written by Ganesh Mogare, July 2015
+ -->
+<ion-view>
+  <ion-nav-bar class="bar-head-common" style="align-items: center;">
+    <ion-nav-title>
+      <h1 class="title menuTitels">Select Your Server</h1>
+      <div style="float:right;">
+        <!-- <a ng-click="popover.show($event)" class="tooltip pg-sales-color" title="More Options">
+          <i class="icon ion-arrow-down-b"></i>
+        </a> -->
+        <span class="pointerCursor" ng-click="EnterCloudIp();prepareManualIpInput();">
+          Switch to {{isConnectToCloud ? 'Local Server' : 'Cloud Server'}}
+        </span>
+      </div>
+    </ion-nav-title>
+    <ion-nav-buttons side="right">
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <ion-content class="scrollBar">
+    <div class="row">
+      <ion-item ng-if="profitGuruServerList.length === 0 || isConnectToCloud" style="width:100%;">
+        <div class="table" style="width:40%;margin-left:30%;background-color:rgb(192, 203, 231)">
+          <br>
+          <div class="row">
+            <h2 style="text-align:center;margin-left:25%;"> Connect to Cloud Server</h2>
+          </div>
+          <br>
+          <div class="row" style="margin-left:20%;">
+            <form ng-submit="sendIP(manualProfitGuruIpDetails.serverIp)">
+              <label class="item item-input">
+                <span class="input-label">IP address</span>
+                <input type="text" ng-model="manualProfitGuruIpDetails.serverIp" autofocus required>
+              </label>
+              <button class="button button-block button-positive" type="submit">Send</button>
+
+            </form>
+          </div>
+        </div>
+      </ion-item>
+      <div ng-if="!isConnectToCloud" ng-repeat="profitGuruServer in profitGuruServerList" ng-click="selectThisProfitGuruServer(profitGuruServer)"
+        class="card float-left" style="width: 24%;height:2%;">
+        <div ng-class="restaurant? 'rest-cardHeader':'cardHeader'" style="height:46px;overflow:hidden">
+          {{profitGuruServer.server ? profitGuruServer.server : profitGuruServer.name }}</div>
+        <div ng-class="restaurant? 'RestcardBody':'cardBody'">
+          <div style="line-height: 113%;height: 73px;">
+            <span class="name">
+              {{'Server ID: '+profitGuruServer.serverId}}</span>
+            <br />
+            <span class="">{{'Server: '+ profitGuruServer.serverIp+':'+profitGuruServer.port}}
+            </span>
+
+          </div>
+          <div>
+            <button align="center" style="width:110%;margin-left: -5%;background-color: #d24d57;" class="firstSupplierCard button button-small button-view"
+              side="center" id="connect">Connect</button>
+          </div>
+        </div>
+      </div>
+      <!-- ng-click="selectThisProfitGuruServer(profitGuruServer)" -->
+    </div>
+
+    <div class="row">
+      <fieldset style="border: 1px solid black;width:100%;">
+        <legend style="width: initial;border: none;"> Recently Connected Servers: </legend>
+        <div ng-repeat="profitguruServer in recentlyConnectedServerInfos " ng-if="profitguruServer.serverInfo.connectionType === ACCESS_TYPE.ONSITE">
+          <div class="card float-left" style="width:24%;margin-left: 0.5%;margin-right: 0.5%;" ng-click="selectThisProfitGuruServer(profitguruServer.serverInfo)">
+            <div align="center" ng-class="restaurant? 'rest-cardHeader':'cardHeader'">
+              {{profitguruServer.serverInfo.applicationSettings.locationName.value}}
+            </div>
+            <div ng-class="restaurant? 'RestcardBody':'cardBody'" style="background-color:#33cd5f ">
+              <p style="font-family:sans-serif;margin:0%;" align="center">
+                <div style="height:100%;font-size:93%;" color="">
+                  <div>STATUS: Live</div>
+                  <div>Last Connected:
+                    <span style="font-size: small">{{profitguruServer.lastConnectedTime}}</span>
+                  </div>
+                </div>
+              </p>
+              <div align="center" style="width:110%;margin-left: -1.2em;background-color: #d24d57;">
+                <div>CLICK TO CONNECT </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ng-click="selectThisProfitGuruServer(profitguruServer.serverInfo)" -->
+        <div ng-repeat="profitguruServer in recentlyConnectedServerInfos " ng-if="profitguruServer.serverInfo.connectionType === ACCESS_TYPE.ONLINE">
+          <div class="card float-left" style="width:24%;margin-left: 0.5%;margin-right: 0.5%;" ng-click="selectOffSiteProfitGuruServer(profitguruServer)">
+            <div align="center" ng-class="restaurant? 'rest-cardHeader':'cardHeader'">
+              {{profitguruServer.serverInfo.applicationSettings.locationName.value}}
+            </div>
+            <div ng-class="restaurant? 'RestcardBody':'cardBody'" style="background-color:lightblue ">
+              <p style="font-family:sans-serif;margin:0%;" align="center">
+                <div style="height:100%;font-size:93%;" color="">
+                  <div>STATUS: Online</div>
+                  <div>Last Connected:
+                    <span style="font-size: small">{{profitguruServer.lastConnectedTime}}</span>
+                  </div>
+                </div>
+              </p>
+              <div align="center" style="width:110%;margin-left: -1.2em;background-color: #d24d57;">
+                <div>CLICK TO CONNECT </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+  </ion-content>
+</ion-view>
