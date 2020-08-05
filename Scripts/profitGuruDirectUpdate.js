@@ -38,9 +38,9 @@ if (appList.indexOf(appType >= 0)) {
 						} else {
 							relativeDestFoldr = root.split('ProfitGuru')[1];
 						}
-					console.log('Copying files from Src=',filesProfitGuruFolder, 'to Dst=',DstFolder);
 						let DstFolder = installationAppRoot + relativeDestFoldr;
 						let orginalSourceFile = DstFolder + '/' + stat.name;
+						console.log('Copying files from Src=',filesProfitGuruFolder, 'to Dst=',DstFolder);
 
 						var dateString = new Date().toLocaleDateString();
 						let OrgRenameFileName = orginalSourceFile + '_' + dateString + '_' + Date.now();
