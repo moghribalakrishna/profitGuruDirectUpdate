@@ -26,7 +26,7 @@ if (appList.indexOf(appType >= 0)) {
 			});
 			
 			switch (appType) {
-				case 'retail':
+				case 'Retail':
 					console.log('Updating'+appType + ' Application from folder', filesProfitGuruFolder);
 					// Create template folder for copying html files
 					walker.on('file', function (root, stat, next) {
