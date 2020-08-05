@@ -77,6 +77,7 @@ if (appList.indexOf(appType >= 0)) {
 					});
 					break;
 				case 'Tito_retailTerminal':
+				case 'Tito_retail':
 					console.log('Updating' + appType + '  Application from folder', filesProfitGuruFolder);
 					// Create template folder for copying html files
 					walker.on('file', function (root, stat, next) {
