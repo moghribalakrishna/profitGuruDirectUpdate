@@ -227,7 +227,7 @@ angular.module('profitGuru')
             response.end_date = end_date ? computeUtils.getFormattedDateForReportDisplay(end_date) : '';
             for (var i = 0; i < pendingTransactions.length; i++) {
                 for (var q = 0; q < docs.length; q++) {
-                    if (docs[q].info.parentId === pendingTransactions[i].sale_id && docs[q].info.customer_id === custId) {
+                    if (docs[q].info.parentId === pendingTransactions[i].sale_id) {
                         for (var p = 0; p < docs[q].payments.length; p++) {
                             if (docs[q].payments[p].payment_type === "Sale on credit") {
                                 pendingTransactions[i].sales_info.pending_amount -= docs[q].payments[p].payment_amount;
