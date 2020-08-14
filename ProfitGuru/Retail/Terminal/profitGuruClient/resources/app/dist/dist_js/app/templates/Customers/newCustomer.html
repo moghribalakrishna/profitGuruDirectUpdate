@@ -1,0 +1,756 @@
+<!--Copyright (C) AliennHu Pvt Ltd - All Rights Reserved
+ 	Unauthorized copying of this file, via any medium is strictly prohibited
+ 	Proprietary and confidential
+ 	Written by Ganesh Mogare, July 2015
+ -->
+<ion-modal-view ng-class="restaurant? 'pg-all-rest-backgroundcss-item':'pg-Item-backgroundcss'">
+
+
+  <ion-header-bar ng-class="restaurant? 'pg-all-rest-headercss':'pg-all-headercss'">
+    <div class="row" style="width: 100%">
+      <div style="width:60%">
+        <h3 class="icon-left ion-person-add  pg-align-details-header">{{customerModalState}}</h3>
+      </div>
+      <div style="width:35%" ng-if="currentState !== STATE.CREATE">
+        <a ng-click="showCustomerScreen(false)" class="mR6">
+          <i style="color: white;" class="icon ion-information-circled pg-icon-details"></i>
+          <span style="color: white;">Details</span>
+        </a>
+        <a ng-if="userEntitlements.customers.update.allowed" class="mR6" id="editItemId"
+          ng-click="showCustomerScreen(true)">
+          <i class="icon ion-edit editIcon"></i>
+          <span style="color: white;">Edit</span>
+        </a>
+        <a id="deleteItemId" ng-if="userEntitlements.customers.delete.allowed"
+          ng-click="confirmCustomerDelete(CustomerStruct.person_id,CustomerStruct.credit_balance)">
+          <i class="icon ion-android-delete deleteIcon"></i>
+          <span style="color: white;">Delete</span>
+        </a>
+      </div>
+      <div style="width:5%">
+        <a id="closeCustomerModel" ng-click="closeModal()">
+          <i class="icon ion-close-circled" ng-class="restaurant? 'pg-close-rest-fontcss':'pg-close-fontcss'"></i>
+        </a>
+      </div>
+    </div>
+  </ion-header-bar>
+
+  <div class="tabs-striped tabs-top tabs-color-light"
+    ng-class="restaurant? 'tabs-background-assertive':'tabs-background-dark'">
+    <div class="tabs">
+      <a class="itemHeaderTabCss tab-item" style="font-size: 16px;" ng-repeat="group in groups"
+        ng-click="selectTab(group)" ng-class="{'active': selectedTab === group.name }">
+        {{group.name}}
+      </a>
+    </div>
+  </div>
+  <ion-content style="margin-top: 48px;height: 70%;" class="scrollBar fontforform overflow-scroll" scroll="false">
+    <form name="newCustomerForm" novalidate id="customerDetails">
+      <div ng-show="basic_details">
+        <!--ng-model-options="{updateOn: 'default blur',debounce: {default: 50, blur: 0}}">-->
+        <div class="list">
+          <div class="row">
+            <div class="col col-50">
+              <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+                ng-class="isDisabled ? 'disabledDiv':''">
+                <label class="InputLabel">Company Name</label>
+                <label class="item-input-wrapper">
+                  <i class="ion-android-contacts"></i>
+                  <input class="basicDetailFirstInput pg-all-text avoidRedBorder" name="company_name"
+                    ng-disabled="isDisabled" ng-model="CustomerStruct.company_name">
+                </label>
+              </div>
+              <!-- <item-input-view-field name="company_name" m-class="basicDetailFirstInput pg-sample-custNSupplier tooltip" display-text="Company Name"
+                icon="ion-android-contacts" ng-disabled="isDisabled" ng-model="CustomerStruct.company_name"></item-input-view-field> -->
+            </div>
+            <div class="col col-50">
+              <item-input-view-field name="agency_name" m-class="pg-sample-custNSupplier tooltip marginTop"
+                display-text="Agency Name" icon="ion-ios-people" ng-disabled="isDisabled"
+                ng-model="CustomerStruct.agency_name"></item-input-view-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="item-input-inset pg-sample-custNSupplier marginTop"
+                ng-class="{'disabledDiv':isDisabled,'receving-edit-table-td-mandatory':!CustomerStruct.alienId && !CustomerStruct.nickName}">
+                <label class="InputLabel">First Name</label>
+                <label class="item-input-wrapper">
+                  <i class="ion-person"
+                    ng-class="!CustomerStruct.alienId && !CustomerStruct.nickName ? 'pg-icons-style-mandatory-fields':''"></i>
+                  <input class="pg-all-text avoidRedBorder" ng-disabled="isDisabled"
+                    ng-model="CustomerStruct.first_name"
+                    ng-required="!CustomerStruct.alienId && !CustomerStruct.nickName">
+                </label>
+              </div>
+              <!-- <item-input-view-field tabindex="0" class="focusMe" name="first_name" m-class="pg-sample-textclass-mandatory-field" display-text="First Name"
+                icon="ion-person pg-icons-style-mandatory-fields" ng-disabled="isDisabled" ng-model="CustomerStruct.first_name"
+                ng-required="!CustomerStruct.nickName"></.
+                item-input-view-field> -->
+            </div>
+            <div class="col">
+              <div class="item-input-inset pg-sample-custNSupplier marginTop"
+                ng-class="{'disabledDiv':isDisabled,'receving-edit-table-td-mandatory':!CustomerStruct.alienId && !CustomerStruct.nickName}">
+                <label class="InputLabel">Last Name</label>
+                <label class="item-input-wrapper">
+                  <i class="ion-person pg-icons-style-mandatory-fields"
+                    ng-class="!CustomerStruct.alienId && !CustomerStruct.nickName ? 'pg-icons-style-mandatory-fields':''"></i>
+                  <input class="pg-all-text avoidRedBorder" ng-disabled="isDisabled" ng-model="CustomerStruct.last_name"
+                    ng-required="!CustomerStruct.alienId && !CustomerStruct.nickName">
+                </label>
+              </div>
+              <!-- <item-input-view-field name="last_name" m-class="pg-sample-textclass-mandatory-field" display-text="Last Name" icon="ion-person pg-icons-style-mandatory-fields"
+                ng-disabled="isDisabled" ng-model="CustomerStruct.last_name" ng-required="!CustomerStruct.nickName"></item-input-view-field> -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-50" style="margin-top: 1%;">
+              <div class="row">
+                <div class="col-50">
+                  <div style="margin-left: 30%;border-radius:25px ">
+                    <div>
+                      <input type="radio" class="big cust" name="gender" value="0" ng-model="CustomerStruct.gender"
+                        ng-disabled="isDisabled" hotkey-enter="scope.toggelGender(scope.CustomerStruct.gender)" />
+                      <label class="inline-gender" for="male">Male</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-50">
+                  <div>
+                    <div>
+                      <input type="radio" class="big cust" name="gender" value="1" ng-model="CustomerStruct.gender"
+                        ng-disabled="isDisabled" />
+                      <label class="inline-gender" for="female">Female</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-50">
+            </div>
+          </div>
+
+          <div class="row" ng-if="mergedConfigurationsData.customerApp.enableAlienNo">
+            <div class="col">
+              <!-- 
+                  IMPORTANT: Directive calls ng-change every time, better not to use 
+                 -->
+              <div class="item-input-inset pg-sample-custNSupplier" ng-class="isDisabled ? 'disabledDiv':''">
+                <label class="InputLabel">Alien Number</label>
+                <label class="item-input-wrapper">
+                  <i class="icon ion-android-star pg-icons-style placeholder-icon pg-icons-style"></i>
+                  <input class="pg-all-text avoidRedBorder" ng-disabled="isDisabled"
+                    ng-change="fillCustomerInfoIfNotGiven(CustomerStruct)" ng-model="CustomerStruct.alienId"
+                    minlength="6">
+                </label>
+              </div>
+            </div>
+            <div class="col">
+              <div class="item-input-inset pg-sample-custNSupplier"
+                ng-class="{'disabledDiv':isDisabled,'receving-edit-table-td-mandatory':CustomerStruct.alienId}">
+                <label class="InputLabel">Nick Name</label>
+                <label class="item-input-wrapper">
+                  <i class="icon ion-android-star pg-icons-style placeholder-icon pg-icons-style"></i>
+                  <input class="pg-all-text avoidRedBorder" ng-disabled="isDisabled" ng-model="CustomerStruct.nickName"
+                    ng-required="CustomerStruct.alienId">
+                </label>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row">
+
+            <div class="col">
+              <div class="item-input-inset pg-sample-custNSupplier"
+                ng-class="{'disabledDiv':isDisabled,'receving-edit-table-td-mandatory':!CustomerStruct.alienId && !CustomerStruct.nickName}"
+                style="margin-top: 10%;">
+                <label class="InputLabel">Phone No</label>
+                <label class="item-input-wrapper">
+                  <i class="ion-android-phone-portrait pg-icons-style-mandatory-fields"
+                    ng-class="!CustomerStruct.alienId && !CustomerStruct.nickName ? 'pg-icons-style-mandatory-fields':''"></i>
+                  <input type="tel" name="phone_number" class="pg-all-text-ph" limit-to="{{phoneNoRestrictLim}}"
+                    ng-model="CustomerStruct.phone_number" ng-model-options="{updateOn: 'default blur'}"
+                    ng-change="checkIfNumberExists(CustomerStruct.phone_number,null,customersList)"
+                    ng-disabled="isDisabled" ng-keyup="" autocomplete="off"
+                    ng-required="!CustomerStruct.alienId && !CustomerStruct.nickName" />
+                </label>
+              </div>
+            </div>
+            <div class="col">
+              <email-input-view-field name="email" m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+                display-text="Email" icon="ion-android-mail" ng-disabled="isDisabled" ng-model="CustomerStruct.email">
+              </email-input-view-field>
+            </div>
+          </div>
+          <div class="warnings" style="margin-left: 8%;" ng-if="numberExistMessage">{{numberExistMessage}}</div>
+
+          <div class="row">
+            <div class="col">
+              <number-input-view-field name="aadhaarNumber"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Aadhaar Number "
+                icon="ion-ios-people" ng-disabled="isDisabled" ng-model="CustomerStruct.aadhaar_number">
+              </number-input-view-field>
+            </div>
+            <div class="col">
+              <item-input-view-field name="address_1"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Address"
+                icon=" ion-android-pin" ng-disabled="isDisabled" ng-model="CustomerStruct.address_1">
+              </item-input-view-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <item-input-view-field name="city_name"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="City " icon="ion-key"
+                ng-disabled="isDisabled" ng-model="CustomerStruct.city_name"></item-input-view-field>
+            </div>
+            <div class="col">
+
+              <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top: 10%;margin-left: 15%"
+                ng-class="isDisabled ? 'disabledDiv':''">
+                <label class="InputLabel">State Name</label>
+                <label class="item-input-wrapper">
+                  <i class="icon ion-key placeholder-icon pg-icons-style"></i>
+                  <select style="border:none;" ng-model="CustomerStruct.state_name"
+                    ng-options="state.state_name as state.state_name for state in stateList" ng-disabled="isDisabled">
+                    <option value="">Select state</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <!-- <div class="col">
+              
+              <item-input-view-field name="state_name" m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="State"
+                icon="ion-key" ng-disabled="isDisabled" ng-model="CustomerStruct.state_name"></item-input-view-field>
+            </div> -->
+          </div>
+          <div class="row">
+            <div class="col">
+              <p style="color:maroon;text-align:center;"
+                ng-if="CustomerStruct.gstin_number && CustomerStruct.state_name && !validateStateByGSTINStateCode(CustomerStruct.gstin_number, CustomerStruct.state_name)">
+                Warning: State name doesn't matches with GSTIN Code ('{{CustomerStruct.gstin_number}}') . Please set
+                correct
+                GSTIN Code.</p>
+            </div>
+          </div>
+          <div class="row" style="width: 50.5%;">
+            <div class="col">
+              <number-input-view-field tabindex="1" name="Pin_number"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Pin Code "
+                icon=" ion-key" ng-disabled="isDisabled" ng-model="CustomerStruct.pin_code"></number-input-view-field>
+            </div>
+          </div>
+          <div ng-hide="true" class="checkbox-dark">
+            <label class="checkbox pg-checkbox-margin">
+              <input type="checkbox" ng-model="CustomerStruct.loyalty" class="pg-emp-grantedit-label" name="loyalty"
+                ng-true-value="1" ng-false-value="0" />
+              <span class="pg-checkbox-details">Eligible For Loyalty</span>
+            </label>
+          </div>
+          <div class="error-container" ng-show="authorizationForm.username.$error"
+            ng-messages="authorizationForm.username.$error">
+          </div>
+        </div>
+        <div class="padding">
+          <p ng-show="newCustomerForm.first_name.$dirty && newCustomerForm.first_name.$error.required || newCustomerForm.last_name.$dirty && newCustomerForm.last_name.$error.required || newCustomerForm.phone_number.$dirty && newCustomerForm.phone_number.$error.required"
+            style="color: red;margin-top: 0.6rem">Red fields are mandatory!</p>
+          <p ng-show="newCustomerForm.email.$dirty && newCustomerForm.email.$error.email "
+            style="color: red;margin-top: 0.6rem">Email is not in correct Format!</p>
+          <p ng-if="newCustomerForm.aadhaarNumber.$dirty && newCustomerForm.aadhaarNumber.$error.number"
+            style="color: red;margin-top: 0.6rem">Enter valid adhar number</p>
+        </div>
+
+        <div ng-if="custSaveErrorMsg">
+          <p style="text-align:center;color:red"> Error: {{custSaveErrorMsg}}
+          </p>
+        </div>
+      </div>
+      <div ng-show="personal_details">
+        <div class="row">
+          <div class="col-50">
+            <img src="img/icon-person-128.png" alt="" style="width:53%;margin-left:20%;margin-bottom:-95%;height:51%;"
+              ng-class="isDisabled ? 'disabledDiv':''">
+          </div>
+          <div class="col-50">
+            <div class="row">
+              <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+                ng-class="isDisabled ? 'disabledDiv':''">
+                <label class="InputLabel">Customer Since</label>
+                <label class="item-input-wrapper">
+                  <i class="icon ion-ios-calendar"></i>
+                  <input type="date" name="creditBalance" class="personalFirstInput pg-all-account"
+                    ng-model="CustomerStruct.customer_since" ng-disabled="isDisabled">
+                </label>
+              </div>
+
+              <!-- <date-input-view-field name="customerSince" m-class="personalFirstInput item-input-inset pg-sample-custNSupplier tooltip marginTop"
+                display-text="Customer Since" icon="ion-ios-calendar" ng-disabled="isDisabled" ng-model="CustomerStruct.customer_since"
+                style="width: 100%;"></date-input-view-field> -->
+            </div>
+            <div class="row">
+              <item-input-view-field name="occupation"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Occupation"
+                icon="ion-ios-people" ng-disabled="isDisabled" ng-model="CustomerStruct.occupation"
+                style="width: 100%;"></item-input-view-field>
+            </div>
+            <div class="row">
+              <date-input-view-field name="birthDate"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="BirthDate"
+                icon="ion-calendar" ng-disabled="isDisabled" ng-model="CustomerStruct.birth_date" style="width: 100%;">
+              </date-input-view-field>
+            </div>
+            <div class="row">
+              <date-input-view-field name="anniversary"
+                m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Anniversary"
+                icon="ion-calendar" ng-disabled="isDisabled" ng-model="CustomerStruct.anniversary" style="width: 100%;">
+              </date-input-view-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div ng-show="bank_details">
+        <div class="row">
+          <div class="col-50">
+            <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+              ng-class="isDisabled ? 'disabledDiv':''">
+              <label class="InputLabel">Bank Name</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-home placeholder-icon"></i>
+                <input type="text" name="bankName" class="bankFirstInput pg-all-account"
+                  ng-model="CustomerStruct.bank_name" ng-disabled="isDisabled">
+              </label>
+            </div>
+
+            <!-- <item-input-view-field name="bankName" m-class="bankFirstInput item-input-inset pg-sample-custNSupplier tooltip marginTop"
+              display-text="Bank Name" icon="ion-ios-home " ng-disabled="isDisabled" ng-model="CustomerStruct.bank_name"></item-input-view-field> -->
+          </div>
+          <div class="col-50">
+            <number-input-view-field name="accountNumber"
+              m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Account Number "
+              icon="ion-key " ng-disabled="isDisabled" ng-model="CustomerStruct.account_number">
+            </number-input-view-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-50">
+            <item-input-view-field name="bankBranch"
+              m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="Bank Branch Name"
+              icon="ion-ios-home-outline" ng-disabled="isDisabled" ng-model="CustomerStruct.bank_branch">
+            </item-input-view-field>
+          </div>
+          <div class="col-50">
+            <item-input-view-field name="ifscCode" m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+              display-text="IFSC Code " icon="ion-pin" ng-disabled="isDisabled" ng-model="CustomerStruct.ifsc_code">
+            </item-input-view-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-50">
+            <number-input-view-field name="micrCode"
+              m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="MICR Code"
+              icon="ion-pin" ng-disabled="isDisabled" ng-model="CustomerStruct.micr_code"></number-input-view-field>
+          </div>
+        </div>
+      </div>
+      <div ng-show="statutory_info">
+        <div class="row">
+          <div class="col-50">
+            <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+              ng-class="isDisabled ? 'disabledDiv':''">
+              <label class="InputLabel">PAN Number</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-paperplane placeholder-icon"></i>
+                <input type="text" name="panNumber" class="statutoryFirstInput pg-all-account"
+                  ng-model="CustomerStruct.pan_number" ng-disabled="isDisabled" minlength="10" maxlength="10">
+              </label>
+            </div>
+          </div>
+          <div class="col-50">
+            <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop"
+              ng-class="isDisabled ? 'disabledDiv':''">
+              <label class="InputLabel">GSTIN Number</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-home placeholder-icon"></i>
+                <input type="text" name="gstinNumber" class="statutoryFirstInput pg-all-account"
+                  ng-model="CustomerStruct.gstin_number" ng-disabled="isDisabled"
+                  ng-change="fillPanNumber();changeCustState(CustomerStruct.gstin_number)" maxlength="15">
+              </label>
+            </div>
+
+            <!-- <item-input-view-field name="gstinNumber" m-class="statutoryFirstInput item-input-inset pg-sample-custNSupplier tooltip marginTop"
+              display-text="GSTIN Number" icon="ion-ios-paperplane" maxlength="15" ng-disabled="isDisabled" ng-model="CustomerStruct.gstin_number"
+              ng-change="fillPanNumber();changeCustState(CustomerStruct.gstin_number)"></item-input-view-field> -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p style="color:maroon;text-align:center;"
+              ng-if="CustomerStruct.state_name && CustomerStruct.gstin_number && !validateStateByGSTINStateCode(CustomerStruct.gstin_number, CustomerStruct.state_name)">
+              Warning: State name ('{{CustomerStruct.state_name}}') doesn't matches with GSTIN Code. Please set correct
+              state
+              name.
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-50">
+            <number-input-view-field name="vatNumber"
+              m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="VAT Number"
+              icon="ion-ios-paperplane" ng-disabled="isDisabled" ng-model="CustomerStruct.vat_number">
+            </number-input-view-field>
+          </div>
+          <div class="col-50">
+            <number-input-view-field name="tinNumber"
+              m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="TIN Number"
+              icon="ion-ios-paperplane" ng-disabled="isDisabled" ng-model="CustomerStruct.tin_number">
+            </number-input-view-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-50">
+            <number-input-view-field name="cstNumber"
+              m-class="item-input-inset pg-sample-custNSupplier tooltip marginTop" display-text="CST Number"
+              icon="ion-ios-paperplane" ng-disabled="isDisabled" ng-model="CustomerStruct.cst_number">
+            </number-input-view-field>
+          </div>
+        </div>
+      </div>
+      <div ng-show="advanced">
+        <div ng-include="'Customers/advanced.html'"></div>
+      </div>
+      <div ng-show="credit_details">
+        <div class="col-50">
+
+          <div class="itemCheckBoxCss checkbox-dark  pg-sample-textclass-NotMandatory-field-style"
+            style="margin-top:10%;margin-left: 80.2%;" ng-class="isDisabled ? 'disabledDiv':''">
+            <label class="checkbox itemsCheckBox">
+              <input type="checkbox" ng-model="CustomerStruct.allow_credit" class="creditFirstInput itemActiveCheckbox"
+                ng-true-value="'Allow'" ng-false-value="''" ng-disabled="isDisabled"
+                hotkey-enter="scope.toggleAllowCredit(scope.CustomerStruct.allow_credit)" />
+              <span class="pg-checkbox-details">Allow Credit</span>
+            </label>
+          </div>
+        </div>
+        <div ng-if="CustomerStruct.allow_credit">
+          <div class="row">
+            <div class="col-50">
+              <div class="disabledDiv item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:10%">
+                <label class="InputLabel">Credit Balance</label>
+                <label class="item-input-wrapper">
+                  <i>{{mergedConfigurationsData.currencySymbol.value}}</i>
+                  <input type="number" name="creditBalance" placeholder="0" class="pg-all-account"
+                    ng-model="CustomerStruct.credit_balance" ng-disabled="true">
+                  <!--ng-disabled="currentState !== STATE.CREATE"/>-->
+
+                </label>
+              </div>
+            </div>
+            <div class="col-50">
+              <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:10%"
+                ng-class="isDisabled ? 'disabledDiv':''">
+                <label class="InputLabel">Credit Limit</label>
+                <label class="item-input-wrapper">
+                  <i>{{mergedConfigurationsData.currencySymbol.value}}</i>
+                  <input type="number" name="creditLimit" placeholder="0" class="pg-all-account"
+                    ng-model="CustomerStruct.credit_limit" ng-disabled="isDisabled" />
+
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-50">
+              <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop" style="margin-left: 15%"
+                ng-class="isDisabled ? 'disabledDiv':''">
+                <label class="InputLabel">Payment Terms </label>
+                <label class="item-input-wrapper">
+                  <i class="icon placeholder-icon pg-icons-style"></i>
+                  <select style="border:none;width: 80%;" ng-model="CustomerStruct.payment_terms"
+                    ng-disabled="isDisabled" ng-change="creditTime(CustomerStruct.payment_terms)"
+                    ng-init="CustomerStruct.payment_terms=CustomerStruct.payment_terms ? CustomerStruct.payment_terms:'days'"
+                    required>
+                    <option value="">select</option>
+                    <option value="days">By Days</option>
+                    <option value="weeks">By Weeks</option>
+                    <option value="months">By Months</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="col-50" ng-if="CustomerStruct.payment_terms ==='weeks'">
+              <number-input-view-field name="byWeeks" m-class="mandatoryTextField pg-sample-custNSupplier marginTop"
+                display-text="By Weeks" icon="ion-ios-people pg-icons-style-mandatory-fields" ng-disabled="isDisabled"
+                ng-model="CustomerStruct.by_weeks" required></number-input-view-field>
+            </div>
+            <div class="col-50" ng-if="CustomerStruct.payment_terms ==='days'">
+              <number-input-view-field name="byDays" m-class="mandatoryTextField pg-sample-custNSupplier marginTop"
+                display-text="By Days" icon="ion-ios-people pg-icons-style-mandatory-fields" ng-disabled="isDisabled"
+                ng-model="CustomerStruct.by_days" required></number-input-view-field>
+            </div>
+            <div class="col-50" ng-if="CustomerStruct.payment_terms==='months'">
+              <number-input-view-field name="byMonths" m-class="mandatoryTextField pg-sample-custNSupplier marginTop"
+                display-text="By Months" icon="ion-ios-people pg-icons-style-mandatory-fields" ng-disabled="isDisabled"
+                ng-model="CustomerStruct.by_months" required></number-input-view-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div ng-show="loyalty_details">
+        <div class="col-50">
+          <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:10%;margin-left: 59.2%;"
+            ng-class="isDisabled ? 'disabledDiv':''">
+            <span>
+              <label class="InputLabel">Allow Loyalty</label>
+              <i class="icon  placeholder-icon pg-icons-style-mandatory-fields"></i>
+              <select ng-model="CustomerStruct.allow_loyalty" ng-change="" class="pg-rep-range-text" style="width:100%;"
+                ng-disabled="isDisabled">
+                <option value="">None</option>
+                <option value="1">Yes</option>
+                <option value="2">No</option>
+              </select>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stickThis">
+        <div class="row">
+          <div class="col-33" style="display: inline-flex;">
+            <!-- shortcut keboard png -->
+            <div class="tooltip" ng-click="cheatSheetToggle()" style="width: 30%;margin-left: 7px;margin-top: 0px;">
+              <img src="img/keyboard.png" alt="ShortCut" style="height: 41px;margin-left: 7px;">
+              <p style="font-size: 14px;">
+                <b>Shortcuts</b>
+              </p>
+              <span class="fs17 tooltipPosition tooltiptext"
+                style="top: 0px;left: 70px;width: 100%;text-align: center;">Ctrl+?</span>
+            </div>
+            <div class="tooltip" ng-if="!basic_details" style="text-align: center;width: 70%;">
+              <div id="previousTabId" class="tooltip" ng-click="previousTabFun()">
+                <button id="previousTabButton" style="width: 115px;"
+                  class="prevClassToFocus nextButtonStyle borderNextTab button button-full">
+                  <i class="icon ion-chevron-left"></i>
+                  Prev</button>
+                <span class="fs17 tooltipPosition tooltiptext">Ctrl+ArrowLeft</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-33">
+            <button ng-if="!isDisabled && !transaction_details"
+              style="width: 100%;margin-left: 0%;font-size: 20px;border-radius: 25px;"
+              class="button button-full pg-submit-for-all-button pg-allignment-submit-button-item"
+              ng-disabled="newCustomerForm.$invalid || elementAddCall || tempTag.value" type="submit" id="newItemSubmit"
+              ng-click="doAction(CustomerStruct)">
+              Submit
+            </button>
+          </div>
+          <div class="col-33">
+            <div ng-if="!statutory_info" style="text-align: center;margin-right: 29px;width: 70%;">
+              <div id="nextTabId" class="tooltip" ng-click="nextTabFun()">
+                <button style="width: 115px;" id="NextTabButton"
+                  class="nextClassToFocus nextButtonStyle borderNextTab button button-full">Next
+                  <i class="icon ion-chevron-right"></i>
+                </button>
+                <span class="fs17 tooltipPosition tooltiptext">Ctrl+ArrowRight</span>
+              </div>
+            </div>
+            <div style="width: 30%;min-width: 30%;;margin-left: 7px;margin-top: 0px;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div ng-if="!isDisabled && !transaction_details" class="padding">
+        <button id="newItemSubmit" hotkey-tab="triggerBySelector('.focusMe input')" class="button button-full pg-submit-for-all-button pg-allignment-submit-button-cust"
+          ng-disabled="newCustomerForm.$invalid || elementAddCall || tempTag.value" type="submit" ng-click="doAction(CustomerStruct)">
+          Save
+        </button>
+      </div> -->
+    </form>
+    <div ng-show="transaction_details">
+      <div class="row" ng-if="!isDisabled">
+        <div class="col col-100">
+          <br>
+          <br>
+          <p style="text-align:center">Transaction is only available in view customer mode.</p>
+        </div>
+      </div>
+      <div ng-if="isDisabled">
+        <div class="row">
+          <div class="col-50">
+
+            <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top: 10%;margin-left: 15%">
+              <label class="InputLabel">Transaction Type</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-key placeholder-icon pg-icons-style"></i>
+                <select style="border:none;width:75%" class="saleHistoryFirstInput" ng-model="transactionType"
+                  ng-init="transactionType='all'"
+                  ng-change="getSalesData(CustomerStruct.person_id, transactionType, true)">
+                  <option selected value="all">All</option>
+                  <option value="sales">Sales</option>
+                  <option value="returns">Returns</option>
+                </select>
+              </label>
+            </div>
+            <!-- <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:10%;">
+              <span>
+                <label class="InputLabel">Transaction Type</label>
+                <i class="icon  placeholder-icon pg-icons-style-mandatory-fields"></i>
+                <select ng-model="transactionType" ng-init="transactionType='sales'" ng-change="getSalesData(CustomerStruct.person_id, transactionType, true)"
+                  class="saleHistoryFirstInput pg-rep-range-text" style="width:100%;">
+                  <option value="all">All</option>
+                  <option value="sales">Sales</option>
+                  <option value="returns">Returns</option>
+                </select>
+              </span>
+            </div> -->
+          </div>
+          <div class="col-50">
+
+            <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop">
+              <label class="InputLabel">Search</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-search"></i>
+                <input type="search" placeholder="Transaction Id" class="pg-all-text avoidRedBorder"
+                  ng-change="searchType(searchKey)" ng-model="searchKey">
+              </label>
+            </div>
+            <!-- <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:10%;">
+              <label class="InputLabel">Search</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-search"></i>
+                <input type="search" placeholder="Transaction Id" ng-model="searchKey" ng-change="searchType(searchKey)" style="background-color: white; width: 100%; margin-left: 0px; padding-left: 0px;"
+                  class="pg-all-text ng-pristine ng-valid ng-valid-minlength ng-valid-maxlength ng-touched">
+              </label>
+            </div> -->
+          </div>
+        </div>
+        <div class="row" ng-init="getDefaultDate()">
+          <div class="col col-50">
+            <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop">
+              <label class="InputLabel">Start Date</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-calendar pg-icons-style-mandatory-fields"></i>
+                <input type="date" class="pg-all-account" ng-change="dateChangeHandler()" ng-model="tempDate.startDate">
+              </label>
+            </div>
+            <!-- <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:5%;">
+              <label class="InputLabel">Start Date</label>
+              <label class="item-input-wrapper">
+                <i class="icon placeholder-icon pg-icons-style-mandatory-fields"></i>
+                <input type="date" ng-change="dateChangeHandler()" ng-model="tempDate.startDate" style="background-color: white; width: 100%; margin-left: 0px; padding-left: 0px;"
+                  class="pg-all-text ng-pristine ng-valid ng-valid-minlength ng-valid-maxlength ng-touched">
+              </label>
+            </div> -->
+          </div>
+          <div class="col col-50">
+            <div class="item-input-inset pg-sample-custNSupplier tooltip marginTop">
+              <label class="InputLabel">End Date</label>
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-calendar pg-icons-style-mandatory-fields"></i>
+                <input type="date" class="pg-all-account" ng-change="dateChangeHandler()" ng-model="tempDate.endDate">
+              </label>
+            </div>
+
+            <!-- <div class="item-input-inset pg-sample-custNSupplier tooltip" style="margin-top:5%;">
+              <label class="InputLabel">End Date</label>
+              <label class="item-input-wrapper">
+                <i class="icon placeholder-icon pg-icons-style-mandatory-fields"></i>
+                <input type="date" ng-change="dateChangeHandler()" ng-model="tempDate.endDate" style="background-color: white; width: 100%; margin-left: 0px; padding-left: 0px;"
+                  class="bg-white pg-all-text ng-pristine ng-valid ng-valid-minlength ng-valid-maxlength ng-touched">
+              </label>
+            </div> -->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-100">
+            <button style="width: 20%; margin-left: 39%;font-size: 16px;border-radius: 25px;"
+              class="history_submit button button-full pg-submit-for-all-button pg-allignment-submit-button-item"
+              ng-disabled="!tempDate.isCorrect" type="submit" id="itemTransactionSearch"
+              ng-click="getSalesData(CustomerStruct.person_id, transactionType, true)">
+              Submit
+            </button>
+            <!-- <button ng-disabled="!tempDate.isCorrect" class="history_submit button" id="itemTransactionSearch" ng-click="getSalesData(CustomerStruct.person_id, transactionType, true)">Submit</button> -->
+          </div>
+        </div>
+        <div ng-init="getSalesData(CustomerStruct.person_id, undefined, true)">
+          <div class="row" ng-if="salesInfo.main.length">
+            <div class="col col-100">
+              <table style="width:100%; text-align:center;border:solid 1px;">
+                <thead style="background-color: blue;color:white">
+                  <td>No. of Transactions</td>
+                  <td>Items Sold</td>
+                  <td>Total Bill</td>
+                  <td>Total Due</td>
+                  <td>The Profit</td>
+                </thead>
+                <tr>
+                  <td>{{summary.count}}</td>
+                  <td>{{summary.quantity}}</td>
+                  <td>{{summary.total}}</td>
+                  <td>{{CustomerStruct.credit_balance}}</td>
+                  <td>{{summary.profit}}</td>
+                </tr>
+              </table>
+              <br>
+              <table style="width:100%; text-align:center;" in-view-container>
+                <thead style="background-color: black; color: white;">
+                  <td>S.No.</td>
+                  <td>Transaction Id</td>
+                  <td>Date</td>
+                  <td>No. of Items</td>
+                  <td>Bill Amt</td>
+                  <td>Due Amt</td>
+                  <td>Comment</td>
+                </thead>
+                <!-- <tbody style="overflow-y: auto;height: 85%;"> -->
+                <tr ng-if="transactionType==='returns'" ng-repeat="s in salesInfo.main | filter :searchByTypeFilter"
+                  in-view="myPagingFunction()" style="border-bottom: solid 1px gray;">
+                  <td>{{$index+1}}</td>
+                  <td>{{ s.info.invoicePrefix? s.info.invoicePrefix + s.info.id : mergedConfigurationsData.invoiceDefaultCheckpoint.sReturnPrefix
+                    + s.id }}</td>
+                  <td>{{s.formatSaleDateTime}}
+                  </td>
+                  <td>{{s.sale_items ? s.sale_items.length : s.items.length}}</td>
+                  <td>{{s.sales_info ? s.sales_info.total : s.info.total}}</td>
+                  <td>{{s.sales_info ? s.sales_info.pending_amount : 'N.A.'}}</td>
+                  <td>{{(s.sales_info) ? (s.sales_info.comment ? s.sales_info.comment : 'N.A.') : (s.info ? s.info.comment: 'N.A.')
+                    }}
+                  </td>
+                </tr>
+
+                <tr ng-if="transactionType!=='returns'" ng-repeat="s in salesInfo.main | filter : searchByTypeFilter"
+                  in-view="myPagingFunction()" style="border-bottom: solid 1px gray;">
+                  <td>{{$index+1}}</td>
+                  <td> {{ s.sales_info ? (s.sales_info.invoicePrefix ? s.sales_info.invoicePrefix+s.sales_info.num :mergedConfigurationsData.invoiceDefaultCheckpoint.prefix+s.sales_info.sale_id):
+                    ((s.info.invoicePrefix ? s.info.invoicePrefix:mergedConfigurationsData.invoiceDefaultCheckpoint.sReturnPrefix)
+                    + s.id)}}</td>
+                  <td>{{s.formatSaleDateTime}}
+                  </td>
+                  <td>{{s.sale_items ? s.sale_items.length : s.items.length}}</td>
+                  <td>{{s.sales_info ? s.sales_info.total : s.info.total}}</td>
+                  <td>{{s.sales_info ? s.sales_info.pending_amount : 'N.A.'}}</td>
+                  <td>{{(s.sales_info) ? (s.sales_info.comment ? s.sales_info.comment : 'N.A.') : (s.info ? s.info.comment: 'N.A.')
+                    }}
+
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="row" ng-if="!salesInfo.main.length">
+            <div class="col col-100">
+              <p style="text-align:center">No transactions found</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" ng-if="transaction_details && isDisabled && showUp"
+      style="position:relative;display:block;width:100%;visibility:hidden;height:21px;">Go Up
+    </button>
+    <button type="button" ng-if="transaction_details && isDisabled && showUp" ng-click="goTop()"
+      style="position:fixed;display:block;bottom:0;width:100%;height:21px;line-height:20px;">Go Up
+    </button>
+  </ion-content>
+</ion-modal-view>
