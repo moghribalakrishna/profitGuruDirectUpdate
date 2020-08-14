@@ -649,7 +649,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             $scope.popoverMainScreen.show(event);
             setTimeout(function () {
                 angular.element('.itemSettingsPopFirstCard').focus();
-                // var target = angular.element(document).find('#itemSettingsPopFirstCard');
             }, 400);
         };
         function isObject(value) {
@@ -861,7 +860,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         };
         function createNewCustomermodalInstance() {
             if ($scope.bModalIsNotOpen(modalNewCust)) {
-                CREATE_MODAL_INSTANCE('Customers/newCustomer.html', 'CustomersCntrlr', $scope).then(function (modal) {
+                CREATE_MODAL_INSTANCE('./dist/dist_js/app/templates/Customers/newCustomer.html', 'CustomersCntrlr', $scope).then(function (modal) {
                     modalNewCust = modal;
                 });
             }
