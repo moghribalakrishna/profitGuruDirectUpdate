@@ -4,7 +4,7 @@
   "description": "ProfitGuru Direct Update",
   "main": "profitGuruDirectUpdate.js",
   "dependencies": {
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.8.5",
     "walk": "^2.3.14",
     "yargs": "^15.4.1"
   },
